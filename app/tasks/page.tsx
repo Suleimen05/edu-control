@@ -42,7 +42,9 @@ export default function TasksPage() {
   const visibleTasks = useMemo(() => {
     let list = isAdmin
       ? tasks
-      : tasks.filter((t) => t.assignee_id === currentUser?.id);
+      : tasks.filter((t) =>
+          t.assignees?.some((a) => a.id === currentUser?.id) || t.assignee_id === currentUser?.id
+        );
 
     if (search) {
       const q = search.toLowerCase();
@@ -55,8 +57,9 @@ export default function TasksPage() {
       list = list.filter((t) => t.priority === filterPriority);
     }
     if (filterAssignee !== "Барлығы") {
-      const user = users.find((u) => u.id === filterAssignee);
-      list = list.filter((t) => t.assignee_id === user?.id);
+      list = list.filter((t) =>
+        t.assignees?.some((a) => a.id === filterAssignee) || t.assignee_id === filterAssignee
+      );
     }
 
     list = [...list].sort((a, b) => {
@@ -242,8 +245,20 @@ export default function TasksPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
-                        <div className="text-gray-700">{task.assignee?.full_name}</div>
-                        <div className="text-xs text-gray-400 truncate max-w-[160px]">{task.assignee?.role}</div>
+                        {task.assignees && task.assignees.length > 1 ? (
+                          <div className="space-y-0.5">
+                            {task.assignees.map((a) => (
+                              <div key={a.id} className="text-gray-700 text-xs">
+                                {a.full_name}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <>
+                            <div className="text-gray-700">{task.assignees?.[0]?.full_name || task.assignee?.full_name}</div>
+                            <div className="text-xs text-gray-400 truncate max-w-[160px]">{task.assignees?.[0]?.role || task.assignee?.role}</div>
+                          </>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-gray-700">{formatDate(task.deadline)}</div>

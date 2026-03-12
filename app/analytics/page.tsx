@@ -35,7 +35,9 @@ export default function AnalyticsPage() {
 
     return staffUsers
       .map((user) => {
-        const userTasks = tasks.filter((t) => t.assignee_id === user.id);
+        const userTasks = tasks.filter((t) =>
+          t.assignees?.some((a) => a.id === user.id) || t.assignee_id === user.id
+        );
         const total = userTasks.length;
         const completed = userTasks.filter((t) => t.status === "Орындалды").length;
         const overdue = userTasks.filter((t) => t.status === "Кешікті").length;

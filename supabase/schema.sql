@@ -122,6 +122,20 @@ CREATE POLICY "All can read weekly events" ON public.weekly_events
   FOR SELECT USING (true);
 
 -- ============================================================
+-- Task Assignees (many-to-many junction table)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.task_assignees (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  task_id     UUID NOT NULL REFERENCES public.tasks(id) ON DELETE CASCADE,
+  user_id     UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  UNIQUE(task_id, user_id)
+);
+
+ALTER TABLE public.task_assignees ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "All can read task_assignees" ON public.task_assignees
+  FOR SELECT USING (true);
+
+-- ============================================================
 -- Sample Data (10 users)
 -- ============================================================
 INSERT INTO public.users (email, full_name, role, is_admin) VALUES

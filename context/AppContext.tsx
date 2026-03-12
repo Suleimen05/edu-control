@@ -10,7 +10,7 @@ interface AppContextType {
   users: User[];
   tasks: Task[];
   loading: boolean;
-  addTask: (task: Omit<Task, "id" | "created_at" | "updated_at">) => Promise<void>;
+  addTask: (task: Omit<Task, "id" | "created_at" | "updated_at"> & { assignee_ids?: string[] }) => Promise<void>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   refetchTasks: () => Promise<void>;
@@ -85,8 +85,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     else localStorage.removeItem("edu_current_user");
   };
 
-  const addTask = async (task: Omit<Task, "id" | "created_at" | "updated_at">) => {
-    const { assignee, ...rest } = task as Task & { assignee?: User };
+  const addTask = async (task: Omit<Task, "id" | "created_at" | "updated_at"> & { assignee_ids?: string[] }) => {
+    const { assignee, assignees, ...rest } = task as Task & { assignee?: User; assignees?: User[]; assignee_ids?: string[] };
     const newTask = await api("/api/tasks", "POST", rest) as Task;
     setTasks((prev) => [...prev, newTask].sort(
       (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()

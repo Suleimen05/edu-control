@@ -2,7 +2,7 @@
 
 import { Task, getDeadlineStatus, DEADLINE_COLORS, STATUS_COLORS, PRIORITY_COLORS } from "@/lib/types";
 import { formatDate, deadlineLabel } from "@/lib/utils";
-import { Calendar, User, Flag, Paperclip } from "lucide-react";
+import { Calendar, Users, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TaskCardProps {
@@ -56,8 +56,10 @@ export function TaskCard({ task, onStatusChange, isAdmin, compact }: TaskCardPro
       {/* Meta */}
       <div className="flex flex-wrap gap-3 text-xs text-gray-500 pl-5 mb-3">
         <span className="flex items-center gap-1">
-          <User size={12} />
-          {task.assignee?.full_name ?? "—"}
+          <Users size={12} />
+          {task.assignees && task.assignees.length > 0
+            ? task.assignees.map((a) => a.full_name).join(", ")
+            : task.assignee?.full_name ?? "—"}
         </span>
         <span className="flex items-center gap-1">
           <Calendar size={12} />

@@ -17,10 +17,8 @@ async function sendTelegram(chatId: string, text: string) {
   return res.ok;
 }
 
-// This endpoint checks all tasks and sends notifications
-// Call it via cron (Vercel Cron, external cron, or manually)
+// This endpoint checks all tasks and sends notifications to ALL assignees
 export async function GET(req: NextRequest) {
-  // Auth: Vercel Cron sends CRON_SECRET, or manual call with Bearer token
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET || "edu-control-cron-2024";
   const isVercelCron = authHeader === `Bearer ${cronSecret}`;
@@ -30,10 +28,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Get all incomplete tasks with assigned users who have telegram_chat_id
+    // Get all incomplete tasks with their assignees via junction table
     const { data: tasks, error } = await supabase
       .from("tasks")
-      .select(`*, assignee:users!tasks_assignee_id_fkey(full_name, telegram_chat_id)`)
+      .select("*, task_assignees(user:users(full_name, telegram_chat_id))")
       .neq("status", "Орындалды");
 
     if (error || !tasks) {
@@ -47,8 +45,11 @@ export async function GET(req: NextRequest) {
     let skipped = 0;
 
     for (const task of tasks) {
-      const assignee = task.assignee as { full_name: string; telegram_chat_id: string | null } | null;
-      if (!assignee?.telegram_chat_id) {
+      const assignees = (task.task_assignees || [])
+        .map((ta: { user: { full_name: string; telegram_chat_id: string | null } | null }) => ta.user)
+        .filter(Boolean) as { full_name: string; telegram_chat_id: string | null }[];
+
+      if (assignees.length === 0) {
         skipped++;
         continue;
       }
@@ -86,8 +87,15 @@ export async function GET(req: NextRequest) {
           `⏳ ${diffDays} күн қалды`;
       }
 
-      const ok = await sendTelegram(assignee.telegram_chat_id, message);
-      if (ok) sent++;
+      // Send to ALL assignees
+      for (const assignee of assignees) {
+        if (assignee.telegram_chat_id) {
+          const ok = await sendTelegram(assignee.telegram_chat_id, message);
+          if (ok) sent++;
+        } else {
+          skipped++;
+        }
+      }
     }
 
     return NextResponse.json({

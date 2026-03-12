@@ -10,7 +10,11 @@
       "Bash(npx kill-port:*)",
       "Bash(gh auth:*)",
       "Bash(curl -s \"https://edu-controlstbv.vercel.app/api/tasks\")",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(git push:*)",
+      "Bash(node scripts/migrate-assignees.js)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

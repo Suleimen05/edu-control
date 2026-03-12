@@ -46,6 +46,7 @@ export interface Task {
   description?: string;
   assignee_id: string;
   assignee?: User;
+  assignees?: User[];
   deadline: string; // ISO date string
   priority: Priority;
   status: TaskStatus;

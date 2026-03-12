@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Check } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { Priority, TaskStatus } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface CreateTaskModalProps {
   onClose: () => void;
@@ -13,30 +14,46 @@ export function CreateTaskModal({ onClose }: CreateTaskModalProps) {
   const { users, currentUser, addTask } = useApp();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
-    assignee_id: "",
     deadline: "",
     priority: "Орташа" as Priority,
     weekly_plan: false,
   });
 
+  const staffUsers = users.filter((u) => !u.is_admin);
+
+  const toggleAssignee = (userId: string) => {
+    setSelectedAssignees((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const selectAll = () => {
+    if (selectedAssignees.length === staffUsers.length) {
+      setSelectedAssignees([]);
+    } else {
+      setSelectedAssignees(staffUsers.map((u) => u.id));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.assignee_id || !form.deadline) return;
+    if (!form.title || selectedAssignees.length === 0 || !form.deadline) return;
 
     setSubmitting(true);
     setError("");
 
     try {
-      const assignee = users.find((u) => u.id === form.assignee_id);
-
       await addTask({
         title: form.title,
         description: form.description || undefined,
-        assignee_id: form.assignee_id,
-        assignee,
+        assignee_id: selectedAssignees[0],
+        assignee_ids: selectedAssignees,
         deadline: form.deadline,
         priority: form.priority,
         status: "Процесте" as TaskStatus,
@@ -56,9 +73,9 @@ export function CreateTaskModal({ onClose }: CreateTaskModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-6 border-b shrink-0">
           <h2 className="text-lg font-bold text-gray-900">Жаңа тапсырма қосу</h2>
           <button
             onClick={onClose}
@@ -69,7 +86,7 @@ export function CreateTaskModal({ onClose }: CreateTaskModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -99,26 +116,53 @@ export function CreateTaskModal({ onClose }: CreateTaskModalProps) {
             />
           </div>
 
-          {/* Assignee */}
+          {/* Assignees (multi-select) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Жауапты тұлға *
-            </label>
-            <select
-              required
-              value={form.assignee_id}
-              onChange={(e) => setForm({ ...form, assignee_id: e.target.value })}
-              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">— Таңдаңыз —</option>
-              {users
-                .filter((u) => !u.is_admin)
-                .map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.full_name} ({u.role})
-                  </option>
-                ))}
-            </select>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Жауапты тұлғалар * ({selectedAssignees.length} таңдалды)
+              </label>
+              <button
+                type="button"
+                onClick={selectAll}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+              >
+                {selectedAssignees.length === staffUsers.length ? "Бәрін алып тастау" : "Бәрін таңдау"}
+              </button>
+            </div>
+            <div className="border rounded-lg max-h-44 overflow-y-auto divide-y">
+              {staffUsers.map((u) => {
+                const isSelected = selectedAssignees.includes(u.id);
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    onClick={() => toggleAssignee(u.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors",
+                      isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors",
+                        isSelected
+                          ? "bg-blue-600 border-blue-600"
+                          : "border-gray-300"
+                      )}
+                    >
+                      {isSelected && <Check size={12} className="text-white" />}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-gray-900 truncate">
+                        {u.full_name}
+                      </div>
+                      <div className="text-xs text-gray-400 truncate">{u.role}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Deadline + Priority */}
@@ -181,7 +225,7 @@ export function CreateTaskModal({ onClose }: CreateTaskModalProps) {
             </button>
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || selectedAssignees.length === 0}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
             >
               {submitting ? (

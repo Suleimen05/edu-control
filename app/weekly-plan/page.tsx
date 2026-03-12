@@ -266,7 +266,7 @@ export default function WeeklyPlanPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {weeklyTasks
               .filter((t) =>
-                isAdmin ? true : t.assignee_id === currentUser?.id
+                isAdmin ? true : (t.assignees?.some((a) => a.id === currentUser?.id) || t.assignee_id === currentUser?.id)
               )
               .map((task) => (
                 <TaskCard

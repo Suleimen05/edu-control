@@ -32,11 +32,15 @@ export default function DashboardPage() {
   // Filter tasks by role (admin sees all, user sees own)
   const visibleTasks = useMemo(() => {
     if (!isAdmin) {
-      return tasks.filter((t) => t.assignee_id === currentUser?.id);
+      return tasks.filter((t) =>
+        t.assignees?.some((a) => a.id === currentUser?.id) || t.assignee_id === currentUser?.id
+      );
     }
     if (filterRole === "Барлығы") return tasks;
     const user = users.find((u) => u.role === filterRole);
-    return tasks.filter((t) => t.assignee_id === user?.id);
+    return tasks.filter((t) =>
+      t.assignees?.some((a) => a.id === user?.id) || t.assignee_id === user?.id
+    );
   }, [tasks, isAdmin, currentUser, filterRole, users]);
 
   const stats = useMemo(() => {
