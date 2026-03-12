@@ -8,7 +8,9 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
       "Bash(npx next:*)",
       "Bash(npx kill-port:*)",
-      "Bash(gh auth:*)"
+      "Bash(gh auth:*)",
+      "Bash(curl -s \"https://edu-controlstbv.vercel.app/api/tasks\")",
+      "Bash(node -e \":*)"
     ]
   }
 }

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     // Get all incomplete tasks with assigned users who have telegram_chat_id
     const { data: tasks, error } = await supabase
       .from("tasks")
-      .select(`*, assignee:users(full_name, telegram_chat_id)`)
+      .select(`*, assignee:users!tasks_assignee_id_fkey(full_name, telegram_chat_id)`)
       .neq("status", "Орындалды");
 
     if (error || !tasks) {
