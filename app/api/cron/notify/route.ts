@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
       .neq("status", "Орындалды");
 
     if (error || !tasks) {
-      return NextResponse.json({ error: "Failed to fetch tasks" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to fetch tasks", details: error?.message }, { status: 500 });
     }
 
     const today = new Date();
@@ -59,7 +59,6 @@ export async function GET(req: NextRequest) {
 
       let message = "";
 
-      // Trigger 1: overdue
       if (diffDays < 0) {
         message =
           `🔴 <b>КЕШІККЕН ТАПСЫРМА!</b>\n\n` +
@@ -67,36 +66,28 @@ export async function GET(req: NextRequest) {
           `📅 Мерзімі: ${task.deadline}\n` +
           `⚠️ ${Math.abs(diffDays)} күнге кешікті!\n\n` +
           `Тапсырманы тез арада орындаңыз.`;
-      }
-      // Trigger 2: 1 day left
-      else if (diffDays === 1) {
-        message =
-          `🟠 <b>Ертең мерзімі аяқталады!</b>\n\n` +
-          `📋 ${task.title}\n` +
-          `📅 Мерзімі: ${task.deadline}\n` +
-          `⏰ Тек 1 күн қалды!`;
-      }
-      // Trigger 3: 3 days left
-      else if (diffDays === 3) {
-        message =
-          `🟡 <b>Мерзімі жақындап қалды</b>\n\n` +
-          `📋 ${task.title}\n` +
-          `📅 Мерзімі: ${task.deadline}\n` +
-          `⏳ 3 күн қалды.`;
-      }
-      // Today is the deadline
-      else if (diffDays === 0) {
+      } else if (diffDays === 0) {
         message =
           `🔴 <b>БҮГІН МЕРЗІМІ!</b>\n\n` +
           `📋 ${task.title}\n` +
           `📅 Мерзімі: ${task.deadline}\n` +
           `⚠️ Бүгін орындау керек!`;
+      } else if (diffDays <= 3) {
+        message =
+          `🟠 <b>Мерзімі жақындап қалды!</b>\n\n` +
+          `📋 ${task.title}\n` +
+          `📅 Мерзімі: ${task.deadline}\n` +
+          `⏰ ${diffDays} күн қалды!`;
+      } else {
+        message =
+          `📌 <b>Тапсырма еске салу</b>\n\n` +
+          `📋 ${task.title}\n` +
+          `📅 Мерзімі: ${task.deadline}\n` +
+          `⏳ ${diffDays} күн қалды`;
       }
 
-      if (message) {
-        const ok = await sendTelegram(assignee.telegram_chat_id, message);
-        if (ok) sent++;
-      }
+      const ok = await sendTelegram(assignee.telegram_chat_id, message);
+      if (ok) sent++;
     }
 
     return NextResponse.json({
