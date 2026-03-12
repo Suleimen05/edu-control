@@ -51,15 +51,15 @@ export async function POST(req: NextRequest) {
 
       // Map login to email
       const emailMap: Record<string, string> = {
-        director: "director@school.kz",
-        deputy1: "deputy1@school.kz",
-        deputy2: "deputy2@school.kz",
-        primary: "primary@school.kz",
-        edu1: "edu1@school.kz",
-        edu2: "edu2@school.kz",
-        methodist: "methodist@school.kz",
-        profile: "profile@school.kz",
-        gifted: "gifted@school.kz",
+        aben: "aben@school.kz",
+        bisenova: "bisenova@school.kz",
+        aimagambetova: "aimagambetova@school.kz",
+        ismagambetova: "ismagambetova@school.kz",
+        mailyk: "mailyk@school.kz",
+        gabbasova: "gabbasova@school.kz",
+        konisbaeva: "konisbaeva@school.kz",
+        dosmagambetova: "dosmagambetova@school.kz",
+        abdikalykova: "abdikalykova@school.kz",
         social: "social@school.kz",
       };
 

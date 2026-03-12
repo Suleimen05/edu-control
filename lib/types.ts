@@ -136,14 +136,14 @@ export interface Credentials {
 }
 
 export const USER_CREDENTIALS: Credentials[] = [
-  { login: "director",  password: "admin123",   email: "director@school.kz" },
-  { login: "deputy1",   password: "dep1pass",   email: "deputy1@school.kz" },
-  { login: "deputy2",   password: "dep2pass",   email: "deputy2@school.kz" },
-  { login: "primary",   password: "primpass",   email: "primary@school.kz" },
-  { login: "edu1",      password: "edu1pass",   email: "edu1@school.kz" },
-  { login: "edu2",      password: "edu2pass",   email: "edu2@school.kz" },
-  { login: "methodist", password: "methpass",   email: "methodist@school.kz" },
-  { login: "profile",   password: "profpass",   email: "profile@school.kz" },
-  { login: "gifted",    password: "giftpass",   email: "gifted@school.kz" },
-  { login: "social",    password: "socpass",    email: "social@school.kz" },
+  { login: "aben",            password: "Edu@dir2026",   email: "aben@school.kz" },
+  { login: "bisenova",        password: "Bisen@oku1",    email: "bisenova@school.kz" },
+  { login: "aimagambetova",   password: "Aimag@oku2",    email: "aimagambetova@school.kz" },
+  { login: "ismagambetova",   password: "Ismag@bast",    email: "ismagambetova@school.kz" },
+  { login: "mailyk",          password: "Mailyk@adis",   email: "mailyk@school.kz" },
+  { login: "gabbasova",       password: "Gabbas@tarb1",  email: "gabbasova@school.kz" },
+  { login: "konisbaeva",      password: "Konis@tarb2",   email: "konisbaeva@school.kz" },
+  { login: "dosmagambetova",  password: "Dosmag@bein",   email: "dosmagambetova@school.kz" },
+  { login: "abdikalykova",    password: "Abdik@daryn",   email: "abdikalykova@school.kz" },
+  { login: "social",          password: "Social@ped1",   email: "social@school.kz" },
 ];
