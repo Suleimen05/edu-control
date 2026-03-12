@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -11,7 +12,8 @@ import {
   BarChart3,
   LogOut,
   GraduationCap,
-  Settings,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -24,11 +26,12 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { currentUser, setCurrentUser, isAdmin } = useApp();
+  const [open, setOpen] = useState(false);
 
-  return (
-    <aside className="w-64 min-h-screen bg-gradient-to-b from-blue-900 to-blue-800 text-white flex flex-col shadow-xl">
+  const sidebarContent = (
+    <>
       {/* Logo */}
-      <div className="p-6 border-b border-blue-700">
+      <div className="p-5 border-b border-blue-700">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
             <GraduationCap size={22} className="text-white" />
@@ -44,7 +47,7 @@ export function Sidebar() {
       {currentUser && (
         <div className="p-4 border-b border-blue-700">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
               {currentUser.full_name.charAt(0)}
             </div>
             <div className="min-w-0">
@@ -66,6 +69,7 @@ export function Sidebar() {
           <Link
             key={href}
             href={href}
+            onClick={() => setOpen(false)}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
               pathname === href || pathname.startsWith(href + "/")
@@ -80,15 +84,45 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-blue-700 space-y-1">
+      <div className="p-4 border-t border-blue-700">
         <button
-          onClick={() => setCurrentUser(null)}
+          onClick={() => { setCurrentUser(null); setOpen(false); }}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-white/10 hover:text-white transition-all w-full"
         >
           <LogOut size={18} />
           Шығу
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-blue-900 text-white flex items-center justify-between px-4 py-3 shadow-lg">
+        <div className="flex items-center gap-2">
+          <GraduationCap size={20} />
+          <span className="font-bold text-sm">EDU CONTROL</span>
+        </div>
+        <button onClick={() => setOpen(!open)} className="p-1">
+          {open ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile sidebar overlay */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-72 bg-gradient-to-b from-blue-900 to-blue-800 text-white flex flex-col shadow-xl overflow-y-auto">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-64 min-h-screen bg-gradient-to-b from-blue-900 to-blue-800 text-white flex-col shadow-xl shrink-0">
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

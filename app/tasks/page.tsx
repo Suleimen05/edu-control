@@ -97,11 +97,11 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4 md:space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Тапсырмалар</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Тапсырмалар</h1>
           <p className="text-gray-500 text-sm mt-0.5">
             {visibleTasks.length} тапсырма табылды
           </p>
@@ -118,10 +118,10 @@ export default function TasksPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border p-4 space-y-3">
-        <div className="flex items-center gap-2 flex-wrap">
+      <div className="bg-white rounded-xl border p-3 md:p-4 space-y-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-wrap">
           {/* Search */}
-          <div className="relative flex-1 min-w-48">
+          <div className="relative flex-1 min-w-0 sm:min-w-48">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
