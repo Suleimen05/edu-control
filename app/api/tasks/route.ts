@@ -98,18 +98,31 @@ export async function POST(req: NextRequest) {
     task_assignees: undefined,
   };
 
-  // 4. Send Telegram notifications to all assignees
-  for (const user of assignees) {
-    const u = user as { full_name: string; telegram_chat_id?: string };
-    if (u.telegram_chat_id) {
-      const msg =
-        `📋 <b>Жаңа тапсырма!</b>\n\n` +
-        `📌 ${body.title}\n` +
-        (body.description ? `📝 ${body.description}\n` : "") +
-        `📅 Мерзімі: ${body.deadline}\n` +
-        `⚡ Маңыздылығы: ${body.priority}\n\n` +
-        `Тапсырманы орындаңыз.`;
-      await sendTelegram(u.telegram_chat_id, msg);
+  // 4. Send Telegram notifications ONLY to selected assignees
+  // Fetch users directly by their IDs to avoid any junction table issues
+  const { data: notifyUsers } = await supabase
+    .from("users")
+    .select("id, full_name, telegram_chat_id")
+    .in("id", assigneeIds);
+
+  console.log("[NOTIFY] Task created:", body.title, "assigneeIds:", assigneeIds, "notifyUsers:", notifyUsers?.map((u) => ({ id: u.id, name: u.full_name, tg: !!u.telegram_chat_id })));
+
+  if (notifyUsers) {
+    // Build assignee names list
+    const allNames = notifyUsers.map((u) => u.full_name).join(", ");
+
+    for (const u of notifyUsers) {
+      if (u.telegram_chat_id) {
+        const msg =
+          `📋 <b>Жаңа тапсырма!</b>\n\n` +
+          `📌 ${body.title}\n` +
+          (body.description ? `📝 ${body.description}\n` : "") +
+          `📅 Мерзімі: ${body.deadline}\n` +
+          `⚡ Маңыздылығы: ${body.priority}\n` +
+          `👥 Жауаптылар: ${allNames}\n\n` +
+          `Тапсырманы орындаңыз.`;
+        await sendTelegram(u.telegram_chat_id, msg);
+      }
     }
   }
 

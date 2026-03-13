@@ -33,9 +33,34 @@ export async function POST(req: NextRequest) {
         `🎓 <b>EDU CONTROL бот</b>\n\n` +
           `Тапсырмалар бойынша хабарландыру алу үшін өзіңізді тіркеңіз.\n\n` +
           `Логиніңізді жіберіңіз, мысалы:\n` +
-          `<code>/link director</code>\n\n` +
+          `<code>/link bisenova</code>\n\n` +
           `Қолжетімді логиндер:\n` +
-          `director, deputy1, deputy2, primary, edu1, edu2, methodist, profile, gifted, social`
+          `aben, bisenova, aimagambetova, ismagambetova, mailyk, gabbasova, konisbaeva, dosmagambetova, abdikalykova, social`
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    // /unlink — unbind chat_id from current user
+    if (text === "/unlink") {
+      const { data: linked } = await supabase
+        .from("users")
+        .select("full_name")
+        .eq("telegram_chat_id", String(chatId))
+        .single();
+
+      if (!linked) {
+        await sendMessage(chatId, "❌ Аккаунт байланыстырылмаған.");
+        return NextResponse.json({ ok: true });
+      }
+
+      await supabase
+        .from("users")
+        .update({ telegram_chat_id: null })
+        .eq("telegram_chat_id", String(chatId));
+
+      await sendMessage(
+        chatId,
+        `✅ <b>${linked.full_name}</b> аккаунтынан шықтыңыз.\n\nБасқа аккаунтқа кіру үшін:\n<code>/link логин</code>`
       );
       return NextResponse.json({ ok: true });
     }
@@ -45,9 +70,15 @@ export async function POST(req: NextRequest) {
       const login = text.replace("/link", "").trim().toLowerCase();
 
       if (!login) {
-        await sendMessage(chatId, "❌ Логинді көрсетіңіз.\nМысалы: <code>/link director</code>");
+        await sendMessage(chatId, "❌ Логинді көрсетіңіз.\nМысалы: <code>/link bisenova</code>");
         return NextResponse.json({ ok: true });
       }
+
+      // First, unlink this chat_id from any previous user
+      await supabase
+        .from("users")
+        .update({ telegram_chat_id: null })
+        .eq("telegram_chat_id", String(chatId));
 
       // Map login to email
       const emailMap: Record<string, string> = {
@@ -74,7 +105,7 @@ export async function POST(req: NextRequest) {
         .from("users")
         .update({ telegram_chat_id: String(chatId) })
         .eq("email", email)
-        .select("full_name, role")
+        .select("id, full_name, role")
         .single();
 
       if (error || !data) {
@@ -89,6 +120,42 @@ export async function POST(req: NextRequest) {
           `💼 ${data.role}\n\n` +
           `Енді тапсырмалар бойынша хабарландыру аласыз.`
       );
+
+      // Send existing incomplete tasks to newly linked user
+      const { data: existingTasks } = await supabase
+        .from("task_assignees")
+        .select("task:tasks(id, title, deadline, priority, status)")
+        .eq("user_id", data.id);
+
+      const pendingTasks = (existingTasks || [])
+        .map((ta: { task: unknown }) => ta.task as { title: string; deadline: string; priority: string; status: string } | null)
+        .filter((t): t is { title: string; deadline: string; priority: string; status: string } =>
+          t !== null && t.status !== "Орындалды"
+        );
+
+      if (pendingTasks.length > 0) {
+        let msg = `📋 <b>Сіздің ағымдағы тапсырмаларыңыз (${pendingTasks.length}):</b>\n\n`;
+        for (const t of pendingTasks) {
+          const deadlineDate = new Date(t.deadline);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          deadlineDate.setHours(0, 0, 0, 0);
+          const diffDays = Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+          let icon = "🟢";
+          if (diffDays < 0) icon = "🔴";
+          else if (diffDays <= 3) icon = "🟡";
+
+          msg += `${icon} <b>${t.title}</b>\n`;
+          msg += `   📅 ${t.deadline}`;
+          if (diffDays < 0) msg += ` (мерзімі ${Math.abs(diffDays)} күн өтті!)`;
+          else if (diffDays === 0) msg += ` (бүгін!)`;
+          else msg += ` (${diffDays} күн қалды)`;
+          msg += `\n   ⚡ ${t.priority}\n\n`;
+        }
+        await sendMessage(chatId, msg);
+      }
+
       return NextResponse.json({ ok: true });
     }
 
@@ -111,7 +178,7 @@ export async function POST(req: NextRequest) {
     // Unknown command
     await sendMessage(
       chatId,
-      `Қолжетімді командалар:\n/start — Бастау\n/link логин — Тіркелу\n/status — Аккаунт тексеру`
+      `Қолжетімді командалар:\n/start — Бастау\n/link логин — Тіркелу\n/unlink — Аккаунттан шығу\n/status — Аккаунт тексеру`
     );
 
     return NextResponse.json({ ok: true });

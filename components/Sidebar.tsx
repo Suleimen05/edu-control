@@ -10,6 +10,7 @@ import {
   ClipboardList,
   CalendarDays,
   BarChart3,
+  StickyNote,
   LogOut,
   GraduationCap,
   Menu,
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/dashboard", label: "Басқару панелі", icon: LayoutDashboard },
   { href: "/tasks", label: "Тапсырмалар", icon: ClipboardList },
   { href: "/weekly-plan", label: "Апталық жоспар", icon: CalendarDays },
+  { href: "/notes", label: "Жазбалар", icon: StickyNote },
   { href: "/analytics", label: "Аналитика", icon: BarChart3 },
 ];
 

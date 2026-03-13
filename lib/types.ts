@@ -72,6 +72,50 @@ export type WeekDay =
   | "Бейсенбі"
   | "Жұма";
 
+// ============================================================
+// Notes & Comments
+// ============================================================
+export type NoteColor = "red" | "blue" | "yellow" | "green" | "purple";
+
+export const NOTE_COLORS: Record<NoteColor, { bg: string; border: string; label: string; dot: string }> = {
+  red:    { bg: "bg-red-50",    border: "border-red-300",    label: "Маңызды",  dot: "bg-red-500" },
+  blue:   { bg: "bg-blue-50",   border: "border-blue-300",   label: "Жоспар",   dot: "bg-blue-500" },
+  yellow: { bg: "bg-yellow-50", border: "border-yellow-300", label: "Еске салу", dot: "bg-yellow-500" },
+  green:  { bg: "bg-green-50",  border: "border-green-300",  label: "Идея",     dot: "bg-green-500" },
+  purple: { bg: "bg-purple-50", border: "border-purple-300", label: "Басқа",    dot: "bg-purple-500" },
+};
+
+export interface NoteAttachment {
+  id: string;
+  note_id: string;
+  file_name: string;
+  file_url: string;
+  file_type?: string;
+  file_size?: number;
+  created_at: string;
+}
+
+export interface Note {
+  id: string;
+  user_id: string;
+  title: string;
+  content?: string;
+  color: NoteColor;
+  pinned: boolean;
+  attachments?: NoteAttachment[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TaskComment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  user?: User;
+  content: string;
+  created_at: string;
+}
+
 export interface AnalyticsData {
   user: User;
   total: number;
