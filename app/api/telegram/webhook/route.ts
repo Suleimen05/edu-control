@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
           `Логиніңізді жіберіңіз, мысалы:\n` +
           `<code>/link bisenova</code>\n\n` +
           `Қолжетімді логиндер:\n` +
-          `aben, bisenova, aimagambetova, ismagambetova, mailyk, gabbasova, konisbaeva, dosmagambetova, abdikalykova, social`
+          `aben, bisenova, aimagambetova, ismagambetova, mailyk, gabbasova, konisbaeva, dosmagambetova, abdikalykova, social, zhumaganbetov, zholamanova, omirzakova`
       );
       return NextResponse.json({ ok: true });
     }
@@ -92,6 +92,9 @@ export async function POST(req: NextRequest) {
         dosmagambetova: "dosmagambetova@school.kz",
         abdikalykova: "abdikalykova@school.kz",
         social: "social@school.kz",
+        zhumaganbetov: "zhumaganbetov@school.kz",
+        zholamanova: "zholamanova@school.kz",
+        omirzakova: "omirzakova@school.kz",
       };
 
       const email = emailMap[login];

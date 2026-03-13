@@ -15,7 +15,8 @@ export type Role =
   | "Әдіскер"
   | "Бейінді оқыту жөніндегі директор орынбасары"
   | "Дарынды балалар маманы"
-  | "Әлеуметтік педагог";
+  | "Әлеуметтік педагог"
+  | "Психолог";
 
 export const ALL_ROLES: Role[] = [
   "Директор",
@@ -28,6 +29,7 @@ export const ALL_ROLES: Role[] = [
   "Бейінді оқыту жөніндегі директор орынбасары",
   "Дарынды балалар маманы",
   "Әлеуметтік педагог",
+  "Психолог",
 ];
 
 export interface User {
@@ -191,4 +193,7 @@ export const USER_CREDENTIALS: Credentials[] = [
   { login: "dosmagambetova",  password: "Dosmag@bein",   email: "dosmagambetova@school.kz" },
   { login: "abdikalykova",    password: "Abdik@daryn",   email: "abdikalykova@school.kz" },
   { login: "social",          password: "Social@ped1",   email: "social@school.kz" },
+  { login: "zhumaganbetov",   password: "Zhumag@dar1",   email: "zhumaganbetov@school.kz" },
+  { login: "zholamanova",     password: "Zholam@psi1",   email: "zholamanova@school.kz" },
+  { login: "omirzakova",      password: "Omirz@psi2",    email: "omirzakova@school.kz" },
 ];

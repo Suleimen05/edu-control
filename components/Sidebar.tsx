@@ -12,7 +12,6 @@ import {
   BarChart3,
   StickyNote,
   LogOut,
-  GraduationCap,
   Menu,
   X,
 } from "lucide-react";
@@ -35,8 +34,8 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-5 border-b border-blue-700">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <GraduationCap size={22} className="text-white" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white/20">
+            <img src="/avatars/image.png" alt="Logo" className="w-9 h-9 object-contain" />
           </div>
           <div>
             <div className="font-bold text-lg leading-tight">EDU CONTROL</div>
@@ -49,9 +48,13 @@ export function Sidebar() {
       {currentUser && (
         <div className="p-4 border-b border-blue-700">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
-              {currentUser.full_name.charAt(0)}
-            </div>
+            {currentUser.avatar_url ? (
+              <img src={currentUser.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
+            ) : (
+              <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                {currentUser.full_name.charAt(0)}
+              </div>
+            )}
             <div className="min-w-0">
               <div className="text-sm font-semibold truncate">{currentUser.full_name}</div>
               <div className="text-blue-300 text-xs truncate">{currentUser.role}</div>
@@ -103,7 +106,7 @@ export function Sidebar() {
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-blue-900 text-white flex items-center justify-between px-4 py-3 shadow-lg">
         <div className="flex items-center gap-2">
-          <GraduationCap size={20} />
+          <img src="/avatars/image.png" alt="Logo" className="w-6 h-6 object-contain" />
           <span className="font-bold text-sm">EDU CONTROL</span>
         </div>
         <button onClick={() => setOpen(!open)} className="p-1">
