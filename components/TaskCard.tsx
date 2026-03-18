@@ -84,20 +84,18 @@ export function TaskCard({ task, onStatusChange, isAdmin, compact }: TaskCardPro
           <div className="flex gap-2">
             {task.status === "Кешікті" || task.status === "Процесте" ? (
               <button
-                onClick={() => onStatusChange(task.id, "Процесте")}
+                onClick={(e) => { e.stopPropagation(); onStatusChange(task.id, "Процесте"); }}
                 className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
               >
                 Процесте
               </button>
             ) : null}
-            {isAdmin && (
-              <button
-                onClick={() => onStatusChange(task.id, "Орындалды")}
-                className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
-              >
-                Орындалды ✓
-              </button>
-            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onStatusChange(task.id, "Орындалды"); }}
+              className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
+            >
+              Орындалды ✓
+            </button>
           </div>
         )}
       </div>

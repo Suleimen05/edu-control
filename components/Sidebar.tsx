@@ -38,7 +38,7 @@ export function Sidebar() {
             <img src="/avatars/image.png" alt="Logo" className="w-9 h-9 object-contain" />
           </div>
           <div>
-            <div className="font-bold text-lg leading-tight">EDU CONTROL</div>
+            <div className="font-bold text-lg leading-tight">KS EDU CONTROL</div>
             <div className="text-blue-300 text-xs">Мектеп басқарма жүйесі</div>
           </div>
         </div>
@@ -57,7 +57,11 @@ export function Sidebar() {
             )}
             <div className="min-w-0">
               <div className="text-sm font-semibold truncate">{currentUser.full_name}</div>
-              <div className="text-blue-300 text-xs truncate">{currentUser.role}</div>
+              <div className="text-blue-300 text-xs truncate">
+                {currentUser.role
+                  .replace(/\s+\d+$/, "")
+                  .replace("директор орынбасары", "орынбасары")}
+              </div>
             </div>
           </div>
           {isAdmin && (
@@ -107,7 +111,7 @@ export function Sidebar() {
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-blue-900 text-white flex items-center justify-between px-4 py-3 shadow-lg">
         <div className="flex items-center gap-2">
           <img src="/avatars/image.png" alt="Logo" className="w-6 h-6 object-contain" />
-          <span className="font-bold text-sm">EDU CONTROL</span>
+          <span className="font-bold text-sm">KS EDU CONTROL</span>
         </div>
         <button onClick={() => setOpen(!open)} className="p-1">
           {open ? <X size={24} /> : <Menu size={24} />}

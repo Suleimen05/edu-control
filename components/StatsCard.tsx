@@ -7,6 +7,7 @@ interface StatsCardProps {
   icon: LucideIcon;
   color: "blue" | "green" | "red" | "orange" | "purple";
   subtitle?: string;
+  active?: boolean;
 }
 
 const colorMap = {
@@ -15,38 +16,47 @@ const colorMap = {
     icon: "bg-blue-100 text-blue-600",
     value: "text-blue-700",
     border: "border-blue-200",
+    activeBorder: "border-blue-500 ring-2 ring-blue-200",
   },
   green: {
     bg: "bg-green-50",
     icon: "bg-green-100 text-green-600",
     value: "text-green-700",
     border: "border-green-200",
+    activeBorder: "border-green-500 ring-2 ring-green-200",
   },
   red: {
     bg: "bg-red-50",
     icon: "bg-red-100 text-red-600",
     value: "text-red-700",
     border: "border-red-200",
+    activeBorder: "border-red-500 ring-2 ring-red-200",
   },
   orange: {
     bg: "bg-orange-50",
     icon: "bg-orange-100 text-orange-600",
     value: "text-orange-700",
     border: "border-orange-200",
+    activeBorder: "border-orange-500 ring-2 ring-orange-200",
   },
   purple: {
     bg: "bg-purple-50",
     icon: "bg-purple-100 text-purple-600",
     value: "text-purple-700",
     border: "border-purple-200",
+    activeBorder: "border-purple-500 ring-2 ring-purple-200",
   },
 };
 
-export function StatsCard({ title, value, icon: Icon, color, subtitle }: StatsCardProps) {
+export function StatsCard({ title, value, icon: Icon, color, subtitle, active }: StatsCardProps) {
   const c = colorMap[color];
 
   return (
-    <div className={cn("rounded-xl border p-5 shadow-sm", c.bg, c.border)}>
+    <div className={cn(
+      "rounded-xl border p-5 shadow-sm transition-all hover:shadow-md",
+      c.bg,
+      active ? c.activeBorder : c.border
+    )}>
       <div className="flex items-center justify-between mb-3">
         <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", c.icon)}>
           <Icon size={20} />
