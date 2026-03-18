@@ -39,7 +39,7 @@ export function Sidebar() {
           </div>
           <div>
             <div className="font-bold text-lg leading-tight">KS EDU CONTROL</div>
-            <div className="text-blue-300 text-xs">Мектеп басқарма жүйесі</div>
+            <div className="text-blue-300 text-xs">Әкімшілік басқару жүйесі</div>
           </div>
         </div>
       </div>
